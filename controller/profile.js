@@ -34,7 +34,7 @@ router.patch("/update-mail", async (req, res) => {
       if (existingUser) {
         return res.status(400).json({
           status: "Failed",
-          message: "User with the provided email already exists",
+          message: "Email already exists",
         });
       }
 
@@ -54,7 +54,7 @@ router.patch("/update-mail", async (req, res) => {
         { new: true }
       );
 
-      return res.send(`Updated Successfully. New email is: ${newUser.email}`);
+      return res.json({email: newUser.email});
     } else {
       return res
         .status(401)
