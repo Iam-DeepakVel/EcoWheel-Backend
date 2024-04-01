@@ -11,7 +11,9 @@ router.get("/profile", async (req, res) => {
   let userInfo;
 
   if (token) {
-    userInfo = jwt.verify(token, mysecretkey);
+    const decoded = jwt.verify(token, mysecretkey);
+    userInfo = await User.findById(decoded.userId);
+    userInfo.password = null;
   } else {
     userInfo = null;
   }
@@ -21,8 +23,8 @@ router.get("/profile", async (req, res) => {
   }
 });
 
-router.patch("/update-mail", async (req, res) => {
-  const { email, password } = req.body;
+router.patch("/update-profile", async (req, res) => {
+  const { email, password, name } = req.body;
   try {
     if (req.headers.authorization) {
       const token = req.headers.authorization.split(" ")[1];
@@ -50,11 +52,11 @@ router.patch("/update-mail", async (req, res) => {
 
       const newUser = await User.findByIdAndUpdate(
         decoded.userId,
-        { email },
+        { email, name },
         { new: true }
       );
 
-      return res.json({email: newUser.email});
+      return res.json({ email: newUser.email, name: newUser.name });
     } else {
       return res
         .status(401)
